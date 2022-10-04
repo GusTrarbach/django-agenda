@@ -1,0 +1,124 @@
+[tool.poetry]
+name = "project"                                            # nome do projeto
+version = "0.1.0"                                           # versionamento de builds
+description = ""                                            # breve descrição do projeto
+authors = ["pedro.ferrari <pedro.ferrari@timenow.com.br>"]  # alterar nome do autor de acordo com o projeto
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+
+# lint dependencies
+flake8 = "^4.0.1"                                           # guia de estilo de código
+pyproject-flake8 = '^0.0.1a4'                               # libera a configuração do flake8 pro projeto
+flake8-print = "^5.0.0"                                     # procura por prints no código
+flake8-docstrings = "^1.6.0"                                # checa a existencia de docstrings
+flake8-annotations = "^2.9.1"                               # checa type annotations
+isort = "^5.10.1"                                           # organiza imports
+bandit = {version = "^1.7.4", extras = ['toml']}            # linter de segurança
+black = "^22.6.0"                                           # checa estilos de código
+pre-commit = "^2.20.0"                                      # roda um pipeline antes de commitar com erros
+commitizen = "^2.32.2"                                      # checa e padroniza mensagens de commit
+flake8-bugbear = "^22.8.23"                                 # checa bugs e problemas de design
+pyaml = "^21.10.1"
+yamllint = "^1.27.1"                                        # linter de arquivos .yaml
+Django = "^4.1.2"
+
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pytest-cov = '^3.0.0'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+# dependencies configuration
+[tool.black]
+line-length = 119                                           # limita o tamanho da linha a 119 caractéres
+targer-version = ['py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.venv
+  | \.env
+  | cdk.out
+  | \.vscode
+  | build
+  | dist
+  | \.mypy_cache
+  | \.idea
+)\
+'''
+
+
+[tool.isort]
+profile = 'black'
+force_single_line = true
+combine_as_imports = true
+lines_between_types = 1
+lines_after_imports = 2
+src_paths = ["project", "tests", "Snippets"]
+line_length = 119
+
+
+[tool.flake8]
+max-line-length = 119
+select = [
+  "C",
+  "E",
+  "W",
+  "F",
+  "N",
+  "B",
+  #"ANN", # verificador de type annotations
+  "T",
+  "D",
+  "B950",
+]
+ignore = [
+  "E203",
+  "E501",
+  "D202",
+  "D400",
+  "D100",
+  "D104",
+  "ANN003",
+  "ANN002",
+  "ANN1",
+]
+per-file-ignores = [
+  "tests/*:ANN,D"
+]
+exclude = [
+  ".venv/*",
+  ".idea/*",
+  ".vscode/*"
+]
+
+
+[tool.bandit]
+skips = [
+  "B101"
+]
+exclude_dirs = [
+  ".venv"
+]
+
+
+[tool.pytest.ini_options]
+minversion = "7.1"
+addopts = """
+  --verbose
+  --color=yes
+  --assert=plain
+  --cov-report term
+  --cov=src tests/
+  --last-failed
+"""
+testpaths = [
+    "tests",
+]
