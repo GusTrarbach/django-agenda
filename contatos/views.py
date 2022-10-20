@@ -1,4 +1,7 @@
 from django.core.paginator import Paginator
+from django.db.models import Q
+from django.db.models import Value
+from django.db.models.functions import Concat
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
@@ -16,6 +19,25 @@ def index(request):
     all_contatos = paginator.get_page(page)
 
     return render(request, "contatos/index.html", {"contatos": all_contatos})
+
+
+def busca(request):
+    """View para a página principal."""
+    termo = request.GET.get("termo")
+
+    if termo is None:
+        raise Http404()
+    campos = Concat("nome", Value(" "), "sobrenome")
+
+    all_contatos = Contato.objects.annotate(nome_completo=campos).filter(
+        Q(nome_completo__icontains=termo) | Q(telefone__icontains=termo), mostrar=True
+    )
+
+    paginator = Paginator(all_contatos, 3)
+    page = request.GET.get("p")
+    all_contatos = paginator.get_page(page)
+
+    return render(request, "contatos/busca.html", {"contatos": all_contatos})
 
 
 def ver_contato(request, contato_id: int):
