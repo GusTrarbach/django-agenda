@@ -23,6 +23,7 @@ pyaml = "^21.10.1"
 yamllint = "^1.27.1"                                        # linter de arquivos .yaml
 Django = "^4.1.2"
 mypy = "^0.982"
+Pillow = "^9.2.0"
 
 
 
