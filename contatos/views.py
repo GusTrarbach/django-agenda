@@ -23,7 +23,7 @@ def index(request):
 
 
 def busca(request):
-    """View para a página principal."""
+    """View para a o resultado da busca na página principal."""
     termo = request.GET.get("termo")
 
     if termo is None or not termo:
