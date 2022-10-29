@@ -1,4 +1,6 @@
+from django.contrib import auth
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.shortcuts import redirect
@@ -7,12 +9,27 @@ from django.shortcuts import render
 
 def login(request):
     """Tela de login"""
-    return render(request, "accounts/login.html")
+    if request.method != "POST":
+        return render(request, "accounts/login.html")
+
+    usuario = request.POST.get("usuario")
+    senha = request.POST.get("senha")
+
+    user = auth.authenticate(request, username=usuario, password=senha)
+
+    if not user:
+        messages.error(request, "Usuário incorreto.")
+        return render(request, "accounts/login.html")
+    else:
+        auth.login(request, user)
+        messages.success(request, "Usuário logado com sucesso.")
+        return redirect("dashboard")
 
 
 def logout(request):
     """Tela de logout"""
-    return render(request, "accounts/logout.html")
+    auth.logout(request)
+    return redirect("login")
 
 
 def register(request):
@@ -68,6 +85,7 @@ def register(request):
     return redirect("login")
 
 
+@login_required(redirect_field_name="login")
 def dashboard(request):
     """Tela de dashboard"""
     return render(request, "accounts/dashboard.html")
