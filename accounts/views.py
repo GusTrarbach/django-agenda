@@ -1,3 +1,4 @@
+from accounts.models import FormContato
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -88,4 +89,17 @@ def register(request):
 @login_required(redirect_field_name="login")
 def dashboard(request):
     """Tela de dashboard"""
-    return render(request, "accounts/dashboard.html")
+    if request.method != "POST":
+        form = FormContato()
+        return render(request, "accounts/dashboard.html", {"form": form})
+
+    form = FormContato(request.POST, request.FILES)
+
+    if not form.is_valid():
+        messages.error(request, "Erro ao enviar o formulário")
+        form = FormContato(request.POST, request.FILES)
+        return render(request, "accounts/dashboard.html", {"form": form})
+
+    form.save()
+    messages.success(request, f"Contato {request.POST.get('nome')} cadastrado com sucesso")
+    return redirect("dashboard")
